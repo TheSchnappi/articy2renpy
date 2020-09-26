@@ -17,16 +17,16 @@ The supported flow elements inside a Dialogue node that are exported are:
 ## Basic Setup:
 
 1. You need a Python 3 environment for this script to run
-2. The converter needs an articy:draft exported JSON file, so export your project into JSON and safe it in the same directory as the script.
-3. Copy the config_example.ini into config.ini
-3. Edit your config.ini configuration file to find your exported JSON file and the target directory in which you want to save the converted rpy script files.
+2. The converter needs an articy:draft exported JSON file.
+3. Copy/rename the config_example.ini to config.ini
+3. Edit your config.ini configuration file to target your exported JSON file and the directory in which you want to save the converted rpy script files.
 4. Run the script
 
 ## Configuration file options
 
 - `json_file` - The path to your articy:draft JSON file that you want to convert.
 - `export_path` - The path in which your converted rpy files should be placed.
-- `file_name_prefix` - A prefix for exported files. If empty, no prefix will be created.
+- `file_name_prefix` - A prefix for exported files. If empty, no prefix will be added.
 - `global_var_prefix` - The articy:draft variable set with the name of this key will be converted to global space in Ren'Py (GlobalVar.my_var -> my_var)
 - `entity_features` - The list of Entities that the converter picks up for matching Entities and DialogueFragments. If you created your own entity features simply add them to the list, seperated by `;`
 
@@ -81,7 +81,7 @@ A condition is a simple if-else check. It will be converted into an if-statement
 
 #### Expression:
 Simply add your expression here.
-The converter will try to convert simple articy:draft C# conditions into Python (&& -> AND, || -> OR, ! -> NOT, true -> True, false -> False).
+The converter will try to convert simple articy:draft C# conditions into Python (`&&` -> `and`, `||` -> `or`, `!` -> `not`, `true` -> `True`, `false` -> `False`).
 
 ### Instruction
 Instructions are code blocks and the converter simply adds a "$" sign before the expression. As a limitation of this, it only works for the first line of code.
@@ -108,7 +108,7 @@ For creating text that is not spoken by anyone, simply create and use an NPC/Ent
 Please note: Entities are not exported or converted to RenPy, so make sure that your NPCs are also defined in your RenPy project!
 
 ## Known Limitations:
-- Each new run will overwrite all existing files it generates, so modifying these files can be tricky. This unfortunately makes the [DialogueName]\_end jump hard to use. As a work around for now you can copy the exit jump into a new separate .rpy file and delete the original exit label. If you have a better solution, I am open for ideas.
+- Each new run will overwrite all existing files it generates, so modifying these files can be tricky. This unfortunately makes the *[DialogueName]\_end* jump hard to use. As a work around for now you can copy the exit jump into a new separate .rpy file and delete the original exit label. If you have a better solution, I am open for ideas.
 - Because articy:draft uses C# style expressions and conditions to evaluate the dialogues in the presentation, while Ren'Py is written in Python, expressions and instructions are prone to fail. The converter tries to smooth the process with some simple string replacements for the most common. In the end you are likely better to just write your python code inside articy:draft and dismiss its presentation mode.
 
 
