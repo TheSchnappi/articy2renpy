@@ -322,7 +322,8 @@ for dialogue in dialogue_list:
     logging.info("==== Generating Dialogue {}".format(dialogue["DisplayName"]))
     logging.info("Create the start and end labels for Dialogue {}".format(dialogue["DisplayName"]))
     export_data = ["label {}_start:".format(dialogue["DisplayName"]),
-                   "    jump {}_{}".format(dialogue["DisplayName"], dialogue["StartNode"])]
+                   "    jump {}_{}".format(dialogue["DisplayName"], dialogue["StartNode"]),
+                   ""]
 
     if not dialogue["EndNode"]:
         export_data.append("")
@@ -340,7 +341,7 @@ for dialogue in dialogue_list:
         else:
             if node["Parent"] == dialogue["Id"]:
                 logging.debug("Node of current dialogue found.")
-                logging.info("== Create new label")
+                logging.info("== Create new label {}_{}:".format(dialogue["DisplayName"], node["Id"]))
                 export_data.append("")
                 export_data.append("label {}_{}:".format(dialogue["DisplayName"], node["Id"]))
                 # Group linear nodes in one label together
@@ -348,6 +349,7 @@ for dialogue in dialogue_list:
                 label_data = []
                 combine_label = True
                 while combine_label:
+                    dialogue_choice_text = ""
                     if node["Type"] == "DialogueFragment":
                         logging.info("DialogueFragment detected")
                         statistics_dialogue_count += 1
@@ -361,12 +363,20 @@ for dialogue in dialogue_list:
                                     speaker_name = entity["ExternalId"]
                                 else:
                                     speaker_name = entity["DisplayName"]
-                        logging.debug("Write dialogue line for {}".format(speaker_name))
                         if node["Text"] != "":
-                            if speaker_name.lower() != "narrator":
-                                label_data.append("{} \"{}\"".format(speaker_name, node["Text"]))
+                            logging.info("Check if the DialogueFragment is located before a choice")
+                            if len(node["Target"]) > 1:
+                                logging.info("DialogueFragment located before a choice, add it in the menu")
+                                if speaker_name.lower() != "narrator":
+                                    dialogue_choice_text = "{} \"{}\"".format(speaker_name, node["Text"])
+                                else:
+                                    dialogue_choice_text = "\"{}\"".format(node["Text"])
                             else:
-                                label_data.append("\"{}\"".format(node["Text"]))
+                                logging.debug("Write dialogue line for {}".format(speaker_name))
+                                if speaker_name.lower() != "narrator":
+                                    label_data.append("{} \"{}\"".format(speaker_name, node["Text"]))
+                                else:
+                                    label_data.append("\"{}\"".format(node["Text"]))
                     elif node["Type"] == "Hub":
                         logging.info("Hub detected")
                         label_data.append("# HUB: {}".format(node["DisplayName"]))
@@ -399,6 +409,9 @@ for dialogue in dialogue_list:
                             logging.info("RenPy Menu Choice detected with {} choices.".format(len(node["Target"])))
                             combine_label = False
                             label_data.append("menu:")
+                            if dialogue_choice_text:
+                                logging.debug("Add cached DialogueFragment text to the menu")
+                                label_data.append("    {}".format(dialogue_choice_text))
                             # We first create a separate menu list so we can later sort them based on their Y position
                             menu_list = []
                             for target in node["Target"]:
@@ -426,23 +439,32 @@ for dialogue in dialogue_list:
                             for dial in dialogue_list:
                                 if dial["Id"] == node["Target"][0]:
                                     logging.info("Target of the jump is a Dialogue!")
-                                    target_dialogue = dial["DisplayName"]
+                                    target_dialogue = dial
 
                             if target_dialogue:
                                 if node["Target"][0] == dialogue["Id"]:
-                                    logging.info("Dialogue end targets an upper node.")
                                     logging.debug("Getting the name of the dialogue")
-                                    target_node = get_node_by_id(dialogue["EndNode"], dialogue_node_list)
-                                    jump_node = get_label_name(target_node, dialogue_list)
-                                    label_data.append("jump {}".format(jump_node))
+                                    if dialogue["EndNode"]:
+                                        # We check if the target is a Dialogue or a normal Node:
+                                        end_is_dialogue = False
+                                        for dial in dialogue_list:
+                                            if dial["Id"] == dialogue["EndNode"]:
+                                                label_data.append("jump {}_start".format(dial["DisplayName"]))
+                                                end_is_dialogue = True
+                                        if not end_is_dialogue:
+                                            target_node = get_node_by_id(dialogue["EndNode"], dialogue_node_list)
+                                            jump_node = get_label_name(target_node, dialogue_list)
+                                            label_data.append("jump {}".format(jump_node))
+                                    else:
+                                        label_data.append("jump {}_end".format(dialogue["DisplayName"]))
                                 else:
-                                    label_data.append("jump {}_start".format(target_dialogue))
+                                    label_data.append("jump {}_start".format(target_dialogue["DisplayName"]))
                             else:
                                 jump_target_node = get_node_by_id(node["Target"][0], dialogue_node_list)
                                 jump_label = get_label_name(jump_target_node, dialogue_list)
                                 label_data.append("jump {}".format(jump_label))
                         elif node["Target"][0] == dialogue["Id"]:
-                            logging.info("Node targets parent Dialoge, jump to End block")
+                            logging.info("Node targets parent Dialogue, jump to End block")
                             combine_label = False
                             label_data.append("jump {}_end".format(dialogue["DisplayName"]))
                         else:
