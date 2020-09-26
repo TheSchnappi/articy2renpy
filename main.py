@@ -387,11 +387,6 @@ for dialogue in dialogue_list:
                         statistics_node_count += 1
                         label_data.append("# JUMP NODE:")
                         # Jump will be created further down when converter realizes that the next node is a label
-                    elif node["Type"] == "Instruction":
-                        logging.info("Instruction detected")
-                        statistics_node_count += 1
-                        code = translate_code_condition(node["Expression"])
-                        label_data.append("$ {}".format(code))
                     elif node["Type"] == "Condition":
                         logging.info("Condition detected")
                         statistics_node_count += 1
@@ -403,11 +398,12 @@ for dialogue in dialogue_list:
                         jump_target_node = get_node_by_id(node["Target"][1], dialogue_node_list)
                         label_data.append("    jump {}".format(get_label_name(jump_target_node, dialogue_list)))
                         combine_label = False
-                    elif node["Instruction"] != "":
-                        logging.info("Instruction detected")
-                        statistics_node_count += 1
+
+                    if node["Instruction"] != "":
+                        logging.info("Instruction Pin detected")
                         code = translate_code_condition(node["Instruction"])
                         label_data.append("$ {}".format(code))
+
 
                     if combine_label:
                         # Check if a Choice Menu exists
