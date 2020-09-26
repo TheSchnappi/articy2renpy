@@ -331,7 +331,6 @@ for dialogue in dialogue_list:
         export_data.append("    pass")
         export_data.append("")
 
-
     # Comb the label id list for labels that have the dialogue as its parent
     logging.info("Start building labels")
     for label_id in label_id_list:
@@ -357,6 +356,7 @@ for dialogue in dialogue_list:
                         if node["StageDirections"] != "":
                             label_data.append("{}".format(node["StageDirections"]))
                         logging.debug("Get DialogueFragments speaker")
+                        speaker_name = "narrator"
                         for entity in entity_list:
                             if entity["Id"] == node["Speaker"]:
                                 if entity["ExternalId"] != "":

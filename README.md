@@ -3,7 +3,7 @@ A converter for artify:draft JSON to Ren'Py \*.rpy script files.
 
 ## How the Converter Works
 The exporter takes your exported JSON articy:draft project and converts your Dialogues flow elements into Ren'Py commands and labels with one \*.rpy script file per Dialogue.
-It also exports all of your in articy:draft defined variables in a seperate \*.rpy script file with a label to call, to make the overall workflow in using articy:draft a little bit easier.
+It also exports all of your in articy:draft defined variables in a separate \*.rpy script file with a label to call, to make the overall workflow in using articy:draft a little bit easier.
 
 The supported flow elements inside a Dialogue node that are exported are:
 
@@ -28,7 +28,7 @@ The supported flow elements inside a Dialogue node that are exported are:
 - `export_path` - The path in which your converted rpy files should be placed.
 - `file_name_prefix` - A prefix for exported files. If empty, no prefix will be added.
 - `global_var_prefix` - The articy:draft variable set with the name of this key will be converted to global space in Ren'Py (GlobalVar.my_var -> my_var)
-- `entity_features` - The list of Entities that the converter picks up for matching Entities and DialogueFragments. If you created your own entity features simply add them to the list, seperated by `;`
+- `entity_features` - The list of Entities that the converter picks up for matching Entities and DialogueFragments. If you created your own entity features simply add them to the list, separated by `;`
 
 ## Supported Flow Elements
 
@@ -103,7 +103,7 @@ So if you have a DialogueFragment linked to the entity `Eileen`, make sure that 
 
 Because articy:draft supports custom entity-templates that not always have to be NPCs, the exporter supports a custom keyword lists for identifying specific NPC entities. All you need to do is add your custom Type name (in the UI called "Technical Name") to the npc_types list in the config file, separated by a ";". The npc_types list is already populated with the default entries of articy:draft.
 
-For creating text that is not spoken by anyone, simply create and use an NPC/Entity named "narrator" in articy:draft. The converter will then ommit the name of spoken dialoge by the "narrator".
+For creating text that is not spoken by anyone, simply create and use an NPC/Entity named "narrator" in articy:draft. The converter will then omit the name of spoken dialogue by the "narrator".
 
 Please note: Entities are not exported or converted to RenPy, so make sure that your NPCs are also defined in your RenPy project!
 
