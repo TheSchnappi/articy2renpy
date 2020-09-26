@@ -228,7 +228,7 @@ config_json_file = config['DEFAULT']['json_file']
 config_export_path = config['DEFAULT']['export_path']
 config_file_name_prefix = config['DEFAULT']['file_name_prefix']
 config_global_var_prefix = config['DEFAULT']['global_var_prefix']
-config_npc_types = config['DEFAULT']['npc_types'].split(";")
+config_entity_features = config['DEFAULT']['entity_features'].split(";")
 
 ########################################################################################################################
 logging.info("Step 2: Read JSON File")
@@ -245,7 +245,7 @@ logging.info("Step 3: Store and Parse JSON Data")
 for element in package_model_list:
     if element["Type"] in DIALOGUE_NODE_TYPES:
         dialogue_node_list.append(convert_node(element))
-    elif element["Type"] in config_npc_types:
+    elif element["Type"] in config_entity_features:
         entity_list.append(convert_entity(element))
     elif element["Type"] == "Dialogue":
         # store container Dialogue nodes

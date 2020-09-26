@@ -24,11 +24,11 @@ The supported flow elements inside a Dialogue node that are exported are:
 
 ## Configuration file options
 
-- 'json_file' - The path to your articy:draft JSON file that you want to convert.
-- 'export_path' - The path in which your converted rpy files should be placed.
-- 'file_name_prefix' - A prefix for exported files. If empty, no prefix will be created.
-- 'global_var_prefix' - The articy:draft variable set with the name of this key will be converted to global space in Ren'Py (GlobalVar.my_var -> my_var)
-- 'npc_types' - The Entity list that the converter picks up for matching Entities and DialogueFragments. If you created your own entity templates simply add them to the list, seperated by `;`
+- `json_file` - The path to your articy:draft JSON file that you want to convert.
+- `export_path` - The path in which your converted rpy files should be placed.
+- `file_name_prefix` - A prefix for exported files. If empty, no prefix will be created.
+- `global_var_prefix` - The articy:draft variable set with the name of this key will be converted to global space in Ren'Py (GlobalVar.my_var -> my_var)
+- `entity_features` - The list of Entities that the converter picks up for matching Entities and DialogueFragments. If you created your own entity features simply add them to the list, seperated by `;`
 
 ## Supported Flow Elements
 
