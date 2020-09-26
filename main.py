@@ -351,6 +351,7 @@ for dialogue in dialogue_list:
                     dialogue_choice_text = ""
                     if node["Type"] == "DialogueFragment":
                         logging.info("DialogueFragment detected")
+                        statistics_node_count += 1
                         statistics_dialogue_count += 1
                         statistics_word_count += len(node["Text"].split())
                         if node["StageDirections"] != "":
@@ -379,17 +380,21 @@ for dialogue in dialogue_list:
                                     label_data.append("\"{}\"".format(node["Text"]))
                     elif node["Type"] == "Hub":
                         logging.info("Hub detected")
+                        statistics_node_count += 1
                         label_data.append("# HUB: {}".format(node["DisplayName"]))
                     elif node["Type"] == "Jump":
                         logging.info("Jump detected")
+                        statistics_node_count += 1
                         label_data.append("# JUMP NODE:")
                         # Jump will be created further down when converter realizes that the next node is a label
                     elif node["Type"] == "Instruction":
                         logging.info("Instruction detected")
+                        statistics_node_count += 1
                         code = translate_code_condition(node["Expression"])
                         label_data.append("$ {}".format(code))
                     elif node["Type"] == "Condition":
                         logging.info("Condition detected")
+                        statistics_node_count += 1
                         code = translate_code_condition(node["Expression"])
                         label_data.append("if {}:".format(code))
                         jump_target_node = get_node_by_id(node["Target"][0], dialogue_node_list)
@@ -400,6 +405,7 @@ for dialogue in dialogue_list:
                         combine_label = False
                     elif node["Instruction"] != "":
                         logging.info("Instruction detected")
+                        statistics_node_count += 1
                         code = translate_code_condition(node["Instruction"])
                         label_data.append("$ {}".format(code))
 
