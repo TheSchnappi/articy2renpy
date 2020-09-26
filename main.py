@@ -487,9 +487,9 @@ for dialogue in dialogue_list:
                                                                                             statistics_word_count))
     export_header.append("###############################################################################")
     if config_file_name_prefix:
-        file_name = "{}.rpy".format(dialogue["DisplayName"])
-    else:
         file_name = "{}_{}.rpy".format(config_file_name_prefix, dialogue["DisplayName"])
+    else:
+        file_name = "{}.rpy".format(dialogue["DisplayName"])
     with open("{}{}".format(config_export_path, file_name), "w") as dialogue_file:
         for line in export_header:
             dialogue_file.write("{}\n".format(line))
