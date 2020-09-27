@@ -229,6 +229,15 @@ config_export_path = config['DEFAULT']['export_path']
 config_file_name_prefix = config['DEFAULT']['file_name_prefix']
 config_global_var_prefix = config['DEFAULT']['global_var_prefix']
 config_entity_features = config['DEFAULT']['entity_features'].split(";")
+config_menu_captions = config['DEFAULT']['menu_captions']
+
+if config_menu_captions.lower() in ['true', 'yes', 't', 'y', '1']:
+    config_menu_captions = True
+elif config_menu_captions.lower() in ['false', 'no', 'f', 'n', '0']:
+    config_menu_captions = False
+else:
+    # Fail state, just make it false
+    config_menu_captions = False
 
 ########################################################################################################################
 logging.info("Step 2: Read JSON File")
@@ -348,7 +357,7 @@ for dialogue in dialogue_list:
                 label_data = []
                 combine_label = True
                 while combine_label:
-                    dialogue_choice_text = ""
+                    dialogue_choice_caption = ""
                     if node["Type"] == "DialogueFragment":
                         logging.info("DialogueFragment detected")
                         statistics_node_count += 1
@@ -367,11 +376,14 @@ for dialogue in dialogue_list:
                         if node["Text"] != "":
                             logging.info("Check if the DialogueFragment is located before a choice")
                             if len(node["Target"]) > 1:
-                                logging.info("DialogueFragment located before a choice, add it in the menu")
-                                if speaker_name.lower() != "narrator":
-                                    dialogue_choice_text = "{} \"{}\"".format(speaker_name, node["Text"])
+                                if config_menu_captions:
+                                    logging.info("DialogueFragment located before a choice ({}), add it as caption to the menu".format(len(node["Target"])))
+                                    if speaker_name.lower() != "narrator":
+                                        dialogue_choice_caption = "{} \"{}\"".format(speaker_name, node["Text"])
+                                    else:
+                                        dialogue_choice_caption = "\"{}\"".format(node["Text"])
                                 else:
-                                    dialogue_choice_text = "\"{}\"".format(node["Text"])
+                                    logging.info("Found but caption mode disabled.")
                             else:
                                 logging.debug("Write dialogue line for {}".format(speaker_name))
                                 if speaker_name.lower() != "narrator":
@@ -411,9 +423,9 @@ for dialogue in dialogue_list:
                             logging.info("RenPy Menu Choice detected with {} choices.".format(len(node["Target"])))
                             combine_label = False
                             label_data.append("menu:")
-                            if dialogue_choice_text:
+                            if dialogue_choice_caption:
                                 logging.debug("Add cached DialogueFragment text to the menu")
-                                label_data.append("    {}".format(dialogue_choice_text))
+                                label_data.append("    {}".format(dialogue_choice_caption))
                             # We first create a separate menu list so we can later sort them based on their Y position
                             menu_list = []
                             for target in node["Target"]:

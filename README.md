@@ -29,6 +29,7 @@ The supported flow elements inside a Dialogue node that are exported are:
 - `file_name_prefix` - A prefix for exported files. If empty, no prefix will be added.
 - `global_var_prefix` - The articy:draft variable set with the name of this key will be converted to global space in Ren'Py (GlobalVar.my_var -> my_var)
 - `entity_features` - The list of Entities that the converter picks up for matching Entities and DialogueFragments. If you created your own entity features simply add them to the list, separated by `;`
+- `menu_captions` - Can be `True` or `False`. If `True`, the DialogueFragment whose Output Pin generates the choice becomes its caption. If `False`, no captions will be generated.
 
 ## Supported Flow Elements
 
