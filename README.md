@@ -13,6 +13,7 @@ The supported flow elements inside a Dialogue node that are exported are:
 - Condition
 - Instruction
 - Dialogue
+- FlowFragment
 
 ## Basic Setup:
 
@@ -34,7 +35,7 @@ The supported flow elements inside a Dialogue node that are exported are:
 ## Supported Flow Elements
 
 ### Dialogue
-For the converter, a dialogue node is a parent node that contains the complete dialogue tree of its children.
+For the converter, a Dialogue node is a parent node that contains the complete dialogue tree of its children.
 The dialogue node name is used for two parts:
 
 - As the file name for the exported RenPy file
@@ -44,8 +45,13 @@ Capital letters of the dialogue name are lowered and spaces are replaced by unde
 Each Dialogue gets a special start label created by the converter, called *[DialogueName]\_start* that represent the start pin of the Dialogue.
 If a Dialogue end pin has no connection to any other flow element, it will create a *[DialogueName]\_end* label.
 
+Please note that only Dialogues with **one input pin** and **one output pin** are supported.
+
+### FlowFragment
+The converter is translating a FlowFragment the same way it translates a Dialogue and does not distinquish between the two.
+
 ### DialogueFragment
-A dialogue fragment is simply a spoken line of dialogue.
+A DialogueFragment is simply a spoken line of dialogue.
 
 A DialogueFragment can be used in any one of the following combination:
 - Stage direction + Full Text
@@ -111,7 +117,8 @@ Please note: Entities are not exported or converted to RenPy, so make sure that 
 ## Known Limitations:
 - Each new run will overwrite all existing files it generates, so modifying these files can be tricky. This unfortunately makes the *[DialogueName]\_end* jump hard to use. As a work around for now you can copy the exit jump into a new separate .rpy file and delete the original exit label. If you have a better solution, I am open for ideas.
 - Because articy:draft uses C# style expressions and conditions to evaluate the dialogues in the presentation, while Ren'Py is written in Python, expressions and instructions are prone to fail. The converter tries to smooth the process with some simple string replacements for the most common. In the end you are likely better to just write your python code inside articy:draft and dismiss its presentation mode.
-
+- Dialogue and FlowFragments can currently only have ONE input pin and output pin.
+- Dialogues or FlowFragments that are empty or have no node that connects to either their input or output pin, will break the converter script.
 
 ## FAQ:
 **Q:** How do I create a choice menu? <br />
