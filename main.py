@@ -327,6 +327,8 @@ if __name__ == "__main__":
     ########################################################################################################################
     logging.info("Step 5: Generating Dialogue Trees")
 
+    end_labels = []
+
     for dialogue in dialogue_list:
         # Just some statistics for the header of the dialogue file
         statistics_node_count = 0
@@ -340,10 +342,7 @@ if __name__ == "__main__":
                        ""]
 
         if not dialogue["EndNode"]:
-            export_data.append("")
-            export_data.append("label {}_end:".format(dialogue["DisplayName"]))
-            export_data.append("    pass")
-            export_data.append("")
+            end_labels.append(dialogue["DisplayName"])
 
         # Comb the label id list for labels that have the dialogue as its parent
         logging.info("Start building labels")
@@ -520,18 +519,19 @@ if __name__ == "__main__":
             for line in export_data:
                 dialogue_file.write("{}\n".format(line))
 
-        logging.info("Create global variable definition file")
-        export_header = []
-        export_header.append("###############################################################################")
-        export_header.append("# Global Game Variables")
-        export_header.append("# Exported from articy:draft 3")
-        export_header.append("# Exported {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')))
-        export_header.append("###############################################################################")
-        file_name = "game_variables.rpy".format()
-        with open("{}/{}".format(config_export_path, file_name), "w") as variables_file:
-            for line in export_header:
-                variables_file.write("{}\n".format(line))
-            variables_file.write("label init_articy_vars:\n")
-            for line in global_variable_list:
-                variables_file.write("   $ {}\n".format(line))
-            variables_file.write("   return\n")
+    ########################################################################################################################
+    logging.info("Create global variable definition file")
+    export_header = []
+    export_header.append("###############################################################################")
+    export_header.append("# Global Game Variables")
+    export_header.append("# Exported from articy:draft 3")
+    export_header.append("# Exported {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')))
+    export_header.append("###############################################################################")
+    file_name = "game_variables.rpy".format()
+    with open("{}/{}".format(config_export_path, file_name), "w") as variables_file:
+        for line in export_header:
+            variables_file.write("{}\n".format(line))
+        variables_file.write("label init_articy_vars:\n")
+        for line in global_variable_list:
+            variables_file.write("   $ {}\n".format(line))
+        variables_file.write("   return\n")
