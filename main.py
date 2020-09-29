@@ -6,7 +6,7 @@
 #
 # For the current version of this converter please look at:
 # GitHub: https://github.com/TheSchnappi/articy2renpy
-# Lemma Soft Forum: https://lemmasoft.renai.us/forums/viewtopic.php?f=51&t=59921
+# LemmaSoft Forum: https://lemmasoft.renai.us/forums/viewtopic.php?f=51&t=59921
 #
 # MIT License
 #

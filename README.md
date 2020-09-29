@@ -1,5 +1,5 @@
 # articy2renpy
-A converter for artify:draft JSON to Ren'Py \*.rpy script files.
+A converter for artify:draft JSON exports to Ren'Py \*.rpy script files.
 
 ## How the Converter Works
 The exporter takes your exported JSON articy:draft project and converts your Dialogues flow elements into Ren'Py commands and labels with one \*.rpy script file per Dialogue.
@@ -42,8 +42,8 @@ The dialogue node name is used for two parts:
 - As the prefix for its dialogue labels
 
 Capital letters of the dialogue name are lowered and spaces are replaced by underscores during the export for label and file compatibility.
-Each Dialogue gets a special start label created by the converter, called *[DialogueName]\_start* that represent the start pin of the Dialogue.
-If a Dialogue end pin has no connection to any other flow element, it will create a *[DialogueName]\_end* label.
+Each Dialogue gets a special start label created by the converter, called `[DialogueName]_start` that represent the start pin of the Dialogue.
+If a Dialogue end pin has no connection to any other flow element, it will create a `[DialogueName]_end` label in a special end_labels.rpy file.
 
 Please note that only Dialogues with **one input pin** and **one output pin** are supported.
 
@@ -88,7 +88,13 @@ A condition is a simple if-else check. It will be converted into an if-statement
 
 #### Expression:
 Simply add your expression here.
-The converter will try to convert simple articy:draft C# conditions into Python (`&&` -> `and`, `||` -> `or`, `!` -> `not`, `true` -> `True`, `false` -> `False`).
+The converter will try to convert articy:draft C# conditions into Python with following string/regex replacements:
+
+- `&&` -> `and`
+- `||` -> `or`
+- `!` -> `not`
+- `true` -> `True`
+- `false` -> `False`
 
 ### Instruction
 Instructions are code blocks and the converter simply adds a "$" sign before the expression. As a limitation of this, it only works for the first line of code.
@@ -108,17 +114,16 @@ define e = Character("Eileen", who_color="#c8ffc8")
 In articy:draft, NPCs are defined as a so called entity instead. For creating the dialogue, the converter takes the DialogueFragments linked entity and trys to use the entities "ExternalId" property for writing the line of dialogue when converting to RenPy. If the ExternalId is not set the exporter will use the DisplayName instead.
 So if you have a DialogueFragment linked to the entity `Eileen`, make sure that the ExternalId is set to `e`.
 
-Because articy:draft supports custom entity-templates that not always have to be NPCs, the exporter supports a custom keyword lists for identifying specific NPC entities. All you need to do is add your custom Type name (in the UI called "Technical Name") to the npc_types list in the config file, separated by a ";". The npc_types list is already populated with the default entries of articy:draft.
+Because articy:draft supports custom entity-templates that not always have to be NPCs, the exporter supports a custom keyword lists for identifying specific NPC entities. All you need to do is add your custom Type name (in the UI called "Technical Name") to the npc_types list in the config file, separated by a `;`. The npc_types list is already populated with the default entries of articy:draft.
 
 For creating text that is not spoken by anyone, simply create and use an NPC/Entity named "narrator" in articy:draft. The converter will then omit the name of spoken dialogue by the "narrator".
 
 Please note: Entities are not exported or converted to RenPy, so make sure that your NPCs are also defined in your RenPy project!
 
 ## Known Limitations:
-- Each new run will overwrite all existing files it generates, so modifying these files can be tricky. This unfortunately makes the *[DialogueName]\_end* jump hard to use. As a work around for now you can copy the exit jump into a new separate .rpy file and delete the original exit label. If you have a better solution, I am open for ideas.
-- Because articy:draft uses C# style expressions and conditions to evaluate the dialogues in the presentation, while Ren'Py is written in Python, expressions and instructions are prone to fail. The converter tries to smooth the process with some simple string replacements for the most common. In the end you are likely better to just write your python code inside articy:draft and dismiss its presentation mode.
-- Dialogue and FlowFragments can currently only have ONE input pin and output pin.
+- Because articy:draft uses C# style expressions and conditions, while Ren'Py is written in Python, expressions and instructions might be somewhat prone to fail. The converter tries to smooth the process with some simple string replacements for the most common. In the end you are likely better to just write your python code inside articy:draft and dismiss the presentation mode.
 - Dialogues or FlowFragments that are empty or have no node that connects to either their input or output pin, will break the converter script.
+- Dialogue and FlowFragments can currently only have ONE input pin and output pin.
 
 ## FAQ:
 **Q:** How do I create a choice menu? <br />
@@ -131,8 +136,8 @@ Please note: Entities are not exported or converted to RenPy, so make sure that 
 **A:** You can also use the output pin of a node for setting instructions but with the same limitations.
 
 **Q:** Is the Document feature supported? <br />
-**A:** No, the Document feature is not supported by this converter. There are multiple problems with this feature and in the context of Ren'Py, writing linear dialogue with RenPy and a text editor is most likely a much better solution then the Document feature.
+**A:** No, the Document feature is not supported by this converter. In the context of Ren'Py, writing linear dialogue with RenPy and a text editor is most likely a much better solution then the Document feature anyway.
 As a work around, you could copy&paste the nodes of the Document in your Dialogue node to make it somewhat work.
 
 **Q:** Do I need to select or deselect something during the JSON export in articy:draft? <br />
-**A:** You have to export at least Packages and GlobalVariables selected during the articy:draft JSON export.
+**A:** You have to export at least both _Packages_ and _GlobalVariables_ with your articy:draft JSON export.
