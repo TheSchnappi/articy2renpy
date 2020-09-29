@@ -32,8 +32,9 @@
 import configparser
 import datetime
 import json
-import re
 import logging
+import os
+import re
 
 DIALOGUE_NODE_TYPES = ["DialogueFragment", "Hub", "Jump", "Condition", "Instruction"]
 
@@ -135,11 +136,11 @@ def convert_node(node_data):
         output_pins = properties["OutputPins"]
         for output_element in output_pins:
             if "Connections" not in output_element:
-                print("- ERROR -")
-                print("NODE HAS NO OUTGOING CONNECTIONS")
-                print("Type:   {}".format(node_data["Type"]))
-                print("ID:     {}".format(properties["Id"]))
-                print("Parent: {}".format(properties["Parent"]))
+                logging.error("- ERROR -")
+                logging.error("NODE HAS NO OUTGOING CONNECTIONS")
+                logging.error("Type:   {}".format(node_data["Type"]))
+                logging.error("ID:     {}".format(properties["Id"]))
+                logging.error("Parent: {}".format(properties["Parent"]))
             for connection in output_element["Connections"]:
                 target_list.append(connection["Target"])
 
@@ -182,7 +183,7 @@ def convert_dialogue(dialogue_data):
     display_name = properties["DisplayName"].lower().strip().replace(" ", "_")
     # Get the first connection of the input pin as our start node
     # Therefore a Dialogue should always have just one node at the start!
-    print(properties)
+
     start_node = properties["InputPins"][0]["Connections"][0]["Target"]
 
     # Check if the output pin of the node is connected to a label
@@ -327,7 +328,8 @@ if __name__ == "__main__":
     ########################################################################################################################
     logging.info("Step 5: Generating Dialogue Trees")
 
-    end_labels = []
+    # List used to create end labels in a separate file
+    end_label_list = []
 
     for dialogue in dialogue_list:
         # Just some statistics for the header of the dialogue file
@@ -342,7 +344,7 @@ if __name__ == "__main__":
                        ""]
 
         if not dialogue["EndNode"]:
-            end_labels.append(dialogue["DisplayName"])
+            end_label_list.append(dialogue["DisplayName"])
 
         # Comb the label id list for labels that have the dialogue as its parent
         logging.info("Start building labels")
@@ -520,13 +522,46 @@ if __name__ == "__main__":
                 dialogue_file.write("{}\n".format(line))
 
     ########################################################################################################################
-    logging.info("Create global variable definition file")
-    export_header = []
-    export_header.append("###############################################################################")
-    export_header.append("# Global Game Variables")
-    export_header.append("# Exported from articy:draft 3")
-    export_header.append("# Exported {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')))
-    export_header.append("###############################################################################")
+    logging.info("Step 6: Create File with End Labels")
+
+    skip_labels = []
+
+    file_path = "{}/end_labels.rpy".format(config_export_path)
+    if os.path.isfile(file_path):
+        for end_label in end_label_list:
+            with open(file_path) as file:
+                if "label {}_end:".format(end_label) in file.read():
+                    logging.info("End label {} already in file, skip".format(end_label))
+                    skip_labels.append(end_label)
+    else:
+        logging.info("No end labels file found, create it.")
+        file_export = ["###############################################################################",
+                       "# End labels of Flows and Dialogues",
+                       "# Created {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')),
+                       "###############################################################################"]
+        with open(file_path, "w") as variables_file:
+            for line in file_export:
+                variables_file.write("{}\n".format(line))
+
+    append_data = []
+    for end_label in end_label_list:
+        if end_label not in skip_labels:
+            append_data.append("")
+            append_data.append("label {}_end:".format(end_label))
+            append_data.append("    # Exported {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')))
+            append_data.append("    return")
+            append_data.append("")
+
+    with open(file_path, "a+") as variables_file:
+        for line in append_data:
+            variables_file.write("{}\n".format(line))
+
+    ########################################################################################################################
+    logging.info("Step 7: Create global variable definition file")
+    export_header = ["###############################################################################",
+                     "# Global Game Variables", "# Exported from articy:draft 3",
+                     "# Exported {}".format(datetime.datetime.today().strftime('%Y-%m-%d - %H:%M:%S')),
+                     "###############################################################################"]
     file_name = "game_variables.rpy".format()
     with open("{}/{}".format(config_export_path, file_name), "w") as variables_file:
         for line in export_header:
