@@ -39,7 +39,7 @@ import re
 DIALOGUE_NODE_TYPES = ["DialogueFragment", "Hub", "Jump", "Condition", "Instruction"]
 
 # List that store all articy variables
-global_variable_list = []
+variable_list = []
 # List that stores all entities
 entity_list = []
 # List that stores all dialogues
@@ -222,7 +222,6 @@ def get_label_name(node, dialogue_list):
             return label_name
 
 
-
 if __name__ == "__main__":
     ########################################################################################################################
     logging.info("Step 1: Read Configuration File")
@@ -253,6 +252,7 @@ if __name__ == "__main__":
 
     # Get only the Models data from the articy json data
     package_model_list = articy_data["Packages"][0]["Models"]
+    global_variable_list = articy_data["GlobalVariables"]
 
     ########################################################################################################################
     logging.info("Step 3: Store and Parse JSON Data")
@@ -266,9 +266,18 @@ if __name__ == "__main__":
             # store container Dialogue nodes
             dialogue_list.append(convert_dialogue(element))
 
+    for element in global_variable_list:
+        namespace = element["Namespace"]
+        for variable_element in element["Variables"]:
+            variable_list.append("{}.{} = {}".format(namespace,
+                                                     variable_element["Variable"],
+                                                     variable_element["Value"]))
+
+
     logging.info("Stored {} nodes".format(len(dialogue_node_list)))
     logging.info("Stored {} entities".format(len(entity_list)))
     logging.info("Stored {} dialogues".format(len(dialogue_list)))
+    logging.info("Stored {} global variables".format(len(variable_list)))
 
     ########################################################################################################################
     logging.info("Step 4: Generate List of Ids that have to become labels")
@@ -422,7 +431,6 @@ if __name__ == "__main__":
                             code = translate_code_condition(node["Instruction"])
                             label_data.append("$ {}".format(code))
 
-
                         if combine_label:
                             # Check if a Choice Menu exists
                             if len(node["Target"]) > 1:
@@ -567,6 +575,6 @@ if __name__ == "__main__":
         for line in export_header:
             variables_file.write("{}\n".format(line))
         variables_file.write("label init_articy_vars:\n")
-        for line in global_variable_list:
+        for line in variable_list:
             variables_file.write("   $ {}\n".format(line))
         variables_file.write("   return\n")
