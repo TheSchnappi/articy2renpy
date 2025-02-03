@@ -1,6 +1,10 @@
 # articy2renpy
 A converter for artify:draft JSON exports to Ren'Py \*.rpy script files.
 
+Hey there, I did a basic rework of the script in `main_rework.py` but since I don't use Articy anymore I won't be able to support this script anymore.
+If anyone wants to fork and continue this project, you are welcome to do so!
+I hope the rework serve as a better base for you all.
+
 ## How the Converter Works
 The exporter takes your exported JSON articy:draft project and converts your Dialogues flow elements into Ren'Py commands and labels with one \*.rpy script file per Dialogue.
 It also exports all of your in articy:draft defined variables in a separate \*.rpy script file with a label to call, to make the overall workflow in using articy:draft a little bit easier.
